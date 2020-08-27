@@ -9,6 +9,7 @@
 'use strict';
 
 const videoElement = document.querySelector('video');
+const video2Element = document.querySelector('video#video2');
 const audioInputSelect = document.querySelector('select#audioSource');
 const audioOutputSelect = document.querySelector('select#audioOutput');
 const videoSelect = document.querySelector('select#videoSource');
@@ -37,8 +38,12 @@ function gotDevices(deviceInfos) {
       audioOutputSelect.appendChild(option);
     } else if (deviceInfo.kind === 'videoinput') {
       option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
-      videoSelect.appendChild(option);
-      video2Select.appendChild(option);
+      videoSelect.appendChild(option);      
+      
+      const option2 = document.createElement('option');
+      option2.text = deviceInfo.label || `camera ${video2Select.length + 1}`;
+      video2Select.appendChild(option2); 
+
     } else {
       console.log('Some other kind of source/device: ', deviceInfo);
     }
@@ -79,8 +84,15 @@ function changeAudioDestination() {
 }
 
 function gotStream(stream) {
-  window.stream = stream; // make stream available to console
-  videoElement.srcObject = stream;
+  //window.stream = stream; // make stream available to console
+  videoElement.srcObject = stream;  
+  // Refresh button list in case labels have become available
+  return navigator.mediaDevices.enumerateDevices();
+}
+
+function gotStream2(stream) {
+  //window.stream = stream; // make stream available to console
+  video2Element.srcObject = stream;  
   // Refresh button list in case labels have become available
   return navigator.mediaDevices.enumerateDevices();
 }
@@ -96,8 +108,7 @@ function start() {
     });
   }
   const audioSource = audioInputSelect.value;
-  const videoSource = videoSelect.value;
-  const video2Source = video2Select.value;
+  const videoSource = videoSelect.value;  
   const constraints = {
     audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
     video: {deviceId: videoSource ? {exact: videoSource} : undefined},
@@ -106,13 +117,21 @@ function start() {
 }
 
 function changeVideo2() {
-  const video2Source = video2Select.value;  
-  const constraints = {    
-    video: {deviceId: video2Source ? {exact: video2Source} : undefined},
+  if (window.stream) {
+    window.stream.getTracks().forEach(track => {
+      track.stop();
+    });
+  }
+  const audioSource = audioInputSelect.value;
+  const videoSource = videoSelect.value;  
+  const constraints = {
+    audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
+    video: {deviceId: videoSource ? {exact: videoSource} : undefined},
   };
-  navigator.mediaDevices.getUserMedia(constraints).then(gotStream).then(gotDevices).catch(handleError);
+  navigator.mediaDevices.getUserMedia(constraints).then(gotStream2).then(gotDevices).catch(handleError);
 }
 
+videoSelect.onchange = start;
 video2Select.onchange = changeVideo2;
 
 start();
