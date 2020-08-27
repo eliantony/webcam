@@ -12,7 +12,8 @@ const videoElement = document.querySelector('video');
 const audioInputSelect = document.querySelector('select#audioSource');
 const audioOutputSelect = document.querySelector('select#audioOutput');
 const videoSelect = document.querySelector('select#videoSource');
-const selectors = [audioInputSelect, audioOutputSelect, videoSelect];
+const video2Select = document.querySelector('select#videoSource2');
+const selectors = [audioInputSelect, audioOutputSelect, videoSelect, video2Select];
 
 audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
 
@@ -37,6 +38,7 @@ function gotDevices(deviceInfos) {
     } else if (deviceInfo.kind === 'videoinput') {
       option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
       videoSelect.appendChild(option);
+      video2Select.appendChild(option);
     } else {
       console.log('Some other kind of source/device: ', deviceInfo);
     }
@@ -95,6 +97,7 @@ function start() {
   }
   const audioSource = audioInputSelect.value;
   const videoSource = videoSelect.value;
+  const video2Source = video2Select.value;
   const constraints = {
     audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
     video: {deviceId: videoSource ? {exact: videoSource} : undefined}
@@ -106,5 +109,6 @@ audioInputSelect.onchange = start;
 audioOutputSelect.onchange = changeAudioDestination;
 
 videoSelect.onchange = start;
+video2Select.onchange = start;
 
 start();
