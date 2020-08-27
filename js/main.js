@@ -8,7 +8,7 @@
 
 'use strict';
 
-const videoElement = document.querySelector('video');
+const videoElement = document.querySelector('video#video1');
 const video2Element = document.querySelector('video#video2');
 const audioInputSelect = document.querySelector('select#audioSource');
 const audioOutputSelect = document.querySelector('select#audioOutput');
@@ -36,7 +36,8 @@ function gotDevices(deviceInfos) {
     } else if (deviceInfo.kind === 'audiooutput') {
       option.text = deviceInfo.label || `speaker ${audioOutputSelect.length + 1}`;
       audioOutputSelect.appendChild(option);
-    } else if (deviceInfo.kind === 'videoinput') {
+    } else 
+    if (deviceInfo.kind === 'videoinput') {
       option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
       videoSelect.appendChild(option);      
       
@@ -84,13 +85,21 @@ function changeAudioDestination() {
 }
 
 function gotStream(stream) {
+  disableAudio(stream);
   //window.stream = stream; // make stream available to console
   videoElement.srcObject = stream;  
   // Refresh button list in case labels have become available
   return navigator.mediaDevices.enumerateDevices();
 }
 
+
+function disableAudio(stream){  
+  if(stream.getAudioTracks()[0] != undefined )
+    stream.getAudioTracks()[0].enabled = false;
+}
+
 function gotStream2(stream) {
+  disableAudio(stream);
   //window.stream = stream; // make stream available to console
   video2Element.srcObject = stream;  
   // Refresh button list in case labels have become available
@@ -117,21 +126,17 @@ function start() {
 }
 
 function changeVideo2() {
-  if (window.stream) {
-    window.stream.getTracks().forEach(track => {
-      track.stop();
-    });
-  }
   const audioSource = audioInputSelect.value;
   const videoSource = videoSelect.value;  
   const constraints = {
     audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
     video: {deviceId: videoSource ? {exact: videoSource} : undefined},
   };
-  navigator.mediaDevices.getUserMedia(constraints).then(gotStream2).then(gotDevices).catch(handleError);
+  navigator.mediaDevices.getUserMedia(constraints).then(gotStream2).catch(handleError);
 }
 
 videoSelect.onchange = start;
 video2Select.onchange = changeVideo2;
 
 start();
+changeVideo2();
