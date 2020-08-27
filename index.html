@@ -69,12 +69,15 @@
 			z-index: -3;
 			-webkit-transform: scaleX(-1);
 			-moz-transform: scaleX(-1) scaleY(-1);
-            -o-transform: scaleX(-1) scaleY(-1);
-            -webkit-transform: scaleX(-1) scaleY(-1);
-            transform: scaleX(-1) scaleY(-1);
+			-o-transform: scaleX(-1) scaleY(-1);
+			-webkit-transform: scaleX(-1) scaleY(-1);
+			transform: scaleX(-1) scaleY(-1);
 		}
 
 		/* height: calc(var(--width) * 0.75); */
+		div#audioSources {
+			display: none;
+		}
 	</style>
 
 </head>
@@ -82,21 +85,15 @@
 <body>
 	<div id="container">
 
-		<h1><a href="//webrtc.github.io/samples/" title="WebRTC samples homepage">WebRTC samples</a><span>Select sources
-				&amp; outputs</span>
-		</h1>
+		<div id="audioSources">
+			<div class="select">
+				<label for="audioSource">Audio input source: </label><select id="audioSource"></select>
+			</div>
 
-		<p>Get available audio, video sources and audio output devices from <code>mediaDevices.enumerateDevices()</code>
-			then set the source for <code>getUserMedia()</code> using a <code>deviceId</code> constraint.</p>
-
-		<div class="select">
-			<label for="audioSource">Audio input source: </label><select id="audioSource"></select>
+			<div class="select">
+				<label for="audioOutput">Audio output destination: </label><select id="audioOutput"></select>
+			</div>
 		</div>
-
-		<div class="select">
-			<label for="audioOutput">Audio output destination: </label><select id="audioOutput"></select>
-		</div>
-
 		<div class="select">
 			<label for="videoSource">Main Video: </label><select id="videoSource"></select>
 		</div>
@@ -104,13 +101,6 @@
 		<div class="select">
 			<label for="video2Source">Pip Video source: </label><select id="video2Source"></select>
 		</div>
-
-
-		<p class="small"><b>Note:</b> If you hear a reverb sound your microphone is picking up the output of your
-			speakers/headset, lower the volume and/or move the microphone further away from your speakers/headset.</p>
-
-		<a href="https://github.com/webrtc/samples/tree/gh-pages/src/content/devices/input-output"
-			title="View source for this page on GitHub" id="viewSource">View source on GitHub</a>
 	</div>
 
 	<div id="pip">
@@ -118,10 +108,8 @@
 		<video id="video1" playsinline autoplay></video>
 	</div>
 
-	<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+	<!-- <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> -->
 	<script src="js/main.js" async></script>
-
-	<script src="../../../js/lib/ga.js"></script>
 </body>
 
 </html>
