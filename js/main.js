@@ -12,7 +12,7 @@ const videoElement = document.querySelector('video');
 const audioInputSelect = document.querySelector('select#audioSource');
 const audioOutputSelect = document.querySelector('select#audioOutput');
 const videoSelect = document.querySelector('select#videoSource');
-const video2Select = document.querySelector('select#videoSource2');
+const video2Select = document.querySelector('select#video2Source');
 const selectors = [audioInputSelect, audioOutputSelect, videoSelect, video2Select];
 
 audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
@@ -100,7 +100,8 @@ function start() {
   const video2Source = video2Select.value;
   const constraints = {
     audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
-    video: {deviceId: videoSource ? {exact: videoSource} : undefined}
+    video: {deviceId: videoSource ? {exact: videoSource} : undefined},
+    video2: {deviceId: video2Source ? {exact: video2Source} : undefined}
   };
   navigator.mediaDevices.getUserMedia(constraints).then(gotStream).then(gotDevices).catch(handleError);
 }
