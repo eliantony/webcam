@@ -8,13 +8,13 @@
 
 'use strict';
 
-const videoElement = document.querySelector('video#video1');
-const video2Element = document.querySelector('video#video2');
+const mainVideoElement = document.querySelector('video#mainVideo');
+const pipVideoElement = document.querySelector('video#pipVideo');
 const audioInputSelect = document.querySelector('select#audioSource');
 const audioOutputSelect = document.querySelector('select#audioOutput');
 const videoSelect = document.querySelector('select#videoSource');
-const video2Select = document.querySelector('select#video2Source');
-const selectors = [audioInputSelect, audioOutputSelect, videoSelect, video2Select];
+const pipVideoSelect = document.querySelector('select#pipVideoSource');
+const selectors = [audioInputSelect, audioOutputSelect, videoSelect, pipVideoSelect];
 
 audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
 
@@ -36,18 +36,18 @@ function gotDevices(deviceInfos) {
     } else if (deviceInfo.kind === 'audiooutput') {
       option.text = deviceInfo.label || `speaker ${audioOutputSelect.length + 1}`;
       audioOutputSelect.appendChild(option);
-    } else 
-    if (deviceInfo.kind === 'videoinput') {
-      option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
-      videoSelect.appendChild(option);      
-      
-      const option2 = document.createElement('option');
-      option2.text = deviceInfo.label || `camera ${video2Select.length + 1}`;
-      video2Select.appendChild(option2); 
+    } else
+      if (deviceInfo.kind === 'videoinput') {
+        option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
+        videoSelect.appendChild(option);
 
-    } else {
-      console.log('Some other kind of source/device: ', deviceInfo);
-    }
+        const option2 = document.createElement('option');
+        option2.text = deviceInfo.label || `camera ${pipVideoSelect.length + 1}`;
+        pipVideoSelect.appendChild(option2);
+
+      } else {
+        console.log('Some other kind of source/device: ', deviceInfo);
+      }
   }
   selectors.forEach((select, selectorIndex) => {
     if (Array.prototype.slice.call(select.childNodes).some(n => n.value === values[selectorIndex])) {
@@ -62,18 +62,18 @@ navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
 function attachSinkId(element, sinkId) {
   if (typeof element.sinkId !== 'undefined') {
     element.setSinkId(sinkId)
-        .then(() => {
-          console.log(`Success, audio output device attached: ${sinkId}`);
-        })
-        .catch(error => {
-          let errorMessage = error;
-          if (error.name === 'SecurityError') {
-            errorMessage = `You need to use HTTPS for selecting audio output device: ${error}`;
-          }
-          console.error(errorMessage);
-          // Jump back to first output device in the list as it's the default.
-          audioOutputSelect.selectedIndex = 0;
-        });
+      .then(() => {
+        console.log(`Success, audio output device attached: ${sinkId}`);
+      })
+      .catch(error => {
+        let errorMessage = error;
+        if (error.name === 'SecurityError') {
+          errorMessage = `You need to use HTTPS for selecting audio output device: ${error}`;
+        }
+        console.error(errorMessage);
+        // Jump back to first output device in the list as it's the default.
+        audioOutputSelect.selectedIndex = 0;
+      });
   } else {
     console.warn('Browser does not support output device selection.');
   }
@@ -81,27 +81,27 @@ function attachSinkId(element, sinkId) {
 
 function changeAudioDestination() {
   const audioDestination = audioOutputSelect.value;
-  attachSinkId(videoElement, audioDestination);
+  attachSinkId(mainVideoElement, audioDestination);
 }
 
 function gotStream(stream) {
   disableAudio(stream);
   //window.stream = stream; // make stream available to console
-  videoElement.srcObject = stream;  
+  mainVideoElement.srcObject = stream;
   // Refresh button list in case labels have become available
   return navigator.mediaDevices.enumerateDevices();
 }
 
 
-function disableAudio(stream){  
-  if(stream.getAudioTracks()[0] != undefined )
+function disableAudio(stream) {
+  if (stream.getAudioTracks()[0] != undefined)
     stream.getAudioTracks()[0].enabled = false;
 }
 
 function gotStream2(stream) {
   disableAudio(stream);
   //window.stream = stream; // make stream available to console
-  video2Element.srcObject = stream;  
+  pipVideoElement.srcObject = stream;
   // Refresh button list in case labels have become available
   return navigator.mediaDevices.enumerateDevices();
 }
@@ -117,26 +117,40 @@ function start() {
     });
   }
   const audioSource = audioInputSelect.value;
-  const videoSource = videoSelect.value;  
+  const videoSource = videoSelect.value;
   const constraints = {
-    audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
-    video: {deviceId: videoSource ? {exact: videoSource} : undefined},
+    audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
+    video: { deviceId: videoSource ? { exact: videoSource } : undefined },
   };
   navigator.mediaDevices.getUserMedia(constraints).then(gotStream).then(gotDevices).catch(handleError);
 }
 
-function changeVideo2() {
+function changepipVideo() {
   const audioSource = audioInputSelect.value;
-  const videoSource = videoSelect.value;  
+  const videoSource = videoSelect.value;
   const constraints = {
-    audio: {deviceId: audioSource ? {exact: audioSource} : undefined},
-    video: {deviceId: videoSource ? {exact: videoSource} : undefined},
+    audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
+    video: { deviceId: videoSource ? { exact: videoSource } : undefined },
   };
   navigator.mediaDevices.getUserMedia(constraints).then(gotStream2).catch(handleError);
 }
 
 videoSelect.onchange = start;
-video2Select.onchange = changeVideo2;
+pipVideoSelect.onchange = changepipVideo;
 
 start();
-changeVideo2();
+changepipVideo();
+
+
+// Bind the pip checkfunction and show pip only when selected. 
+const pipCheckbox = document.querySelector('input#pipEnabled');
+
+pipCheckbox.onclick = function () {
+  // alert("pipChanged " + pipCheckbox.checked);
+  if (pipCheckbox.checked) {
+    pipVideoElement.style.display = "inline-block";
+  } else {
+    pipVideoElement.style.display = "none";
+  }
+};
+

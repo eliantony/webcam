@@ -48,24 +48,23 @@
 			position: relative 0px 0px;
 		}
 
-		video#video2 {
+		video#pipVideo {
 			background: #222;
 			margin: 0 0 20px 0;
 			width: 300px;
 			height: 200px;
-			position: relative;
-			top: -0px;
+			position: relative;			
+			bottom: 949px;
 			z-index: -2;
 		}
 
-		video#video1 {
+		video#mainVideo {
 			background: #222;
 			margin: 0 0 20px 0;
 			--width: 100%;
 			width: var(--width);
 			height: calc(var(--width) * 0.75);
-			position: relative;
-			top: -225px;
+			position: relative;			
 			z-index: -3;
 			-webkit-transform: scaleX(-1);
 			-moz-transform: scaleX(-1) scaleY(-1);
@@ -98,14 +97,22 @@
 			<label for="videoSource">Main Video: </label><select id="videoSource"></select>
 		</div>
 
-		<div class="select">
-			<label for="video2Source">Pip Video source: </label><select id="video2Source"></select>
+		<div style="display:inline-block">
+			<div class="select">
+				<label for="pipVideoSource">Show PIP: </label><input id="pipEnabled" type="checkbox" checked="true"></input>
+			</div>
+			
+			<div class="select">
+				<label for="pipVideoSource">PIP Video source: </label><select id="pipVideoSource"></select>
+			</div>
+			
 		</div>
+		
 	</div>
 
-	<div id="pip">
-		<video id="video2" playsinline autoplay></video>
-		<video id="video1" playsinline autoplay></video>
+	<div id="pip">		
+		<video id="mainVideo" playsinline autoplay></video>
+		<video id="pipVideo" playsinline autoplay></video>
 	</div>
 
 	<!-- <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> -->
